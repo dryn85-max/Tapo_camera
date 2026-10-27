@@ -1,0 +1,57 @@
+# Скопировать в config.yaml. Формат: https://github.com/tykateetee/rtsp-to-onvif
+#
+# Каждый блок — отдельная виртуальная ONVIF-камера со своим IP и MAC.
+# UniFi Protect считает один ONVIF-сервер одной камерой, поэтому на две
+# Tapo нужно два блока с разными портами.
+#
+# ЗАМЕНИТЬ:
+#   dev           — имя физического интерфейса хоста (ip addr), подключённого кабелем
+#   hostname      — IP хоста, на котором работает go2rtc (не IP камеры!)
+#   mac           — опционально: свой LAA-MAC, чтобы заранее сделать Fixed IP в UniFi.
+#                   Если не задать, сервис сгенерирует 1A:11:B0:xx:xx:xx и допишет сюда.
+#
+# Логин/пароль при адопте в Protect: BRIDGE_USER / BRIDGE_PASS из ../.env
+# (сервис проксирует их в go2rtc).
+
+onvif:
+  - name: TapoHall                 # только латинские буквы, без пробелов
+    dev: eth0
+    # mac: 0A:00:00:00:00:60
+    target:
+      hostname: 192.168.1.10       # IP хоста с go2rtc
+      ports:
+        rtsp: 7554                 # rtsp.listen из go2rtc.yaml
+        snapshot: 1984
+    highQuality:
+      rtsp: /c200_1                # имя стрима в go2rtc
+      snapshot: /api/frame.jpeg?src=c200_1   # снапшоты в rtsp-to-onvif пока не работают
+      width: 1920                  # Tapo C200: 1920x1080, ~15 fps
+      height: 1080
+      framerate: 15
+      bitrate: 2048                # кбит/с; уточнить через scripts/check-camera.sh
+      quality: 4
+    ports:
+      server: 8081
+      rtsp: 8554
+      snapshot: 8080
+
+  - name: TapoYard
+    dev: eth0
+    # mac: 0A:00:00:00:00:61
+    target:
+      hostname: 192.168.1.10
+      ports:
+        rtsp: 7554
+        snapshot: 1984
+    highQuality:
+      rtsp: /c200_2
+      snapshot: /api/frame.jpeg?src=c200_2
+      width: 1920
+      height: 1080
+      framerate: 15
+      bitrate: 2048
+      quality: 4
+    ports:
+      server: 9081
+      rtsp: 9554
+      snapshot: 9080

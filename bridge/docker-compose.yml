@@ -1,0 +1,35 @@
+# Мост Tapo C200 -> UniFi Protect.
+# go2rtc забирает по одной RTSP-сессии с каждой камеры и раздаёт потоки,
+# rtsp-to-onvif публикует каждый поток как отдельную виртуальную ONVIF-камеру
+# со своим IP/MAC, чтобы UniFi Protect мог её адоптить.
+#
+# Оба сервиса работают в сети хоста: Protect находит камеры через
+# WS-Discovery (UDP 3702 multicast), а rtsp-to-onvif добавляет виртуальные
+# IP на физический интерфейс хоста.
+
+services:
+  go2rtc:
+    image: alexxit/go2rtc:latest
+    container_name: tapo-go2rtc
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    volumes:
+      - ./go2rtc/go2rtc.yaml:/config/go2rtc.yaml:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  rtsp-to-onvif:
+    image: kulasolutions/rtsp-to-onvif:latest
+    container_name: tapo-rtsp-to-onvif
+    restart: unless-stopped
+    hostname: rtsp-to-onvif
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - go2rtc
+    volumes:
+      # сервис дописывает в файл сгенерированные mac и uuid, поэтому не :ro
+      - ./rtsp-to-onvif/config.yaml:/onvif.yaml
+    environment:
+      DEBUG: "0"   # поставить "1" на время первого запуска

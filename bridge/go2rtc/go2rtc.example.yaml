@@ -1,0 +1,36 @@
+# Скопировать в go2rtc.yaml. Переменные берутся из ../.env (env_file в compose).
+# Документация: https://github.com/AlexxIT/go2rtc
+
+log:
+  level: info
+
+api:
+  listen: ":1984"          # веб-интерфейс go2rtc: http://<host>:1984
+
+rtsp:
+  listen: ":7554"          # не 8554: этот порт занимают виртуальные камеры rtsp-to-onvif
+  username: "${BRIDGE_USER}"
+  password: "${BRIDGE_PASS}"
+  default_query: "video"   # Protect всё равно не пишет аудио со сторонних камер
+
+webrtc:
+  listen: ":8555"
+
+streams:
+  # Основной поток 1080p каждой камеры. Один клиент на камеру.
+  c200_1:
+    - "rtsp://${TAPO_USER}:${TAPO_PASS}@${TAPO1_IP}:554/stream1"
+  c200_2:
+    - "rtsp://${TAPO_USER}:${TAPO_PASS}@${TAPO2_IP}:554/stream1"
+
+  # Потоки 360p для Frigate detect / Home Assistant. Protect их не использует.
+  c200_1_sub:
+    - "rtsp://${TAPO_USER}:${TAPO_PASS}@${TAPO1_IP}:554/stream2"
+  c200_2_sub:
+    - "rtsp://${TAPO_USER}:${TAPO_PASS}@${TAPO2_IP}:554/stream2"
+
+  # Альтернатива: собственный протокол Tapo с двусторонним аудио.
+  # Пароль здесь — пароль ОБЛАЧНОГО аккаунта TP-Link, не аккаунт камеры.
+  # Раскомментировать только если нужна двусторонняя связь в Home Assistant.
+  # c200_1_tapo:
+  #   - "tapo://CLOUD_PASSWORD@${TAPO1_IP}"
