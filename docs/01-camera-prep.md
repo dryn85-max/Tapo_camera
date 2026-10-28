@@ -82,7 +82,7 @@ Tapo, а приложение требует TP-Link ID. Дальше облак
 
 | Порт | Протокол | Назначение |
 |------|----------|------------|
-| 554/tcp | RTSP | `rtsp://user:pass@IP:554/stream1` (1080p) и `/stream2` (720p), оба H.264, 25 к/с |
+| 554/tcp | RTSP | `rtsp://user:pass@IP:554/stream1` (1080p) и `/stream2` (720p), оба H.264; частота кадров по умолчанию 15, в приложении Tapo можно поднять до 25 (Настройки → Качество видео) |
 | 2020/tcp | ONVIF | Device/Media service, Profile S |
 | 443/tcp | HTTPS | собственный протокол Tapo (приложение, go2rtc `tapo://`) |
 | 3702/udp | WS-Discovery | автообнаружение ONVIF |
