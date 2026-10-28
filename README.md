@@ -14,7 +14,11 @@
 
 ## Целевое железо
 
-Tapo C200(DE) **Ver 5.0** (ЕС, 2024): Ingenic T23N, SC2336P, RTL8188FTV,
+Консоль: **UniFi Dream Router 7 (UDR7)**, схема и расчёт хранилища в
+[docs/00-hardware-udr7.md](docs/00-hardware-udr7.md).
+
+Камеры: 
+две Tapo C200(DE) **Ver 5.0** (ЕС, 2024, прошивка 1.5.7): Ingenic T23N, SC2336P, RTL8188FTV,
 8 МБ flash, только Wi-Fi. Thingino этот вариант поддерживает, но на октябрь
 2026 требует пайки и имеет открытый баг корневой ФС для 8 МБ сборки.
 
