@@ -23,7 +23,7 @@ streams:
   c200_2:
     - "rtsp://${TAPO_USER}:${TAPO_PASS}@${TAPO2_IP}:554/stream1"
 
-  # Потоки 360p для Frigate detect / Home Assistant. Protect их не использует.
+  # Потоки 720p для Frigate detect / Home Assistant. Protect их не использует.
   c200_1_sub:
     - "rtsp://${TAPO_USER}:${TAPO_PASS}@${TAPO1_IP}:554/stream2"
   c200_2_sub:

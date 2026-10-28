@@ -40,24 +40,27 @@ if [ -z "$RESP" ]; then
   fail "ONVIF не ответил. Проверьте, что в приложении Tapo создан аккаунт камеры и порт 2020 открыт."
 else
   ok "ONVIF отвечает"
-  # Вытаскиваем UTC-время камеры и сравниваем с часами этого хоста.
-  y=$(echo "$RESP" | grep -o '<tt:Year>[0-9]*' | head -1 | tr -dc 0-9)
-  mo=$(echo "$RESP" | grep -o '<tt:Month>[0-9]*' | head -1 | tr -dc 0-9)
-  d=$(echo "$RESP" | grep -o '<tt:Day>[0-9]*' | head -1 | tr -dc 0-9)
-  h=$(echo "$RESP" | grep -o '<tt:Hour>[0-9]*' | head -1 | tr -dc 0-9)
-  mi=$(echo "$RESP" | grep -o '<tt:Minute>[0-9]*' | head -1 | tr -dc 0-9)
-  s=$(echo "$RESP" | grep -o '<tt:Second>[0-9]*' | head -1 | tr -dc 0-9)
+  # Вытаскиваем UTC-время камеры (префикс пространства имён может быть любым)
+  # и сравниваем с часами этого хоста.
+  utc=$(echo "$RESP" | tr -d '\n' | grep -o '<[A-Za-z0-9]*:*UTCDateTime>.*</[A-Za-z0-9]*:*UTCDateTime>' | head -1)
+  f() { echo "$utc" | grep -o "<[A-Za-z0-9]*:*$1>[0-9]*" | head -1 | grep -o '[0-9]*$'; }
+  y=$(f Year); mo=$(f Month); d=$(f Day); h=$(f Hour); mi=$(f Minute); s=$(f Second)
   if [ -n "$y" ] && [ -n "$h" ]; then
-    cam_ts=$(date -u -d "$y-$mo-$d $h:$mi:$s" +%s 2>/dev/null || echo "")
+    cam_ts=$(date -u -d "$y-$mo-$d $h:$mi:${s:-0}" +%s 2>/dev/null \
+          || date -u -j -f "%Y-%m-%d %H:%M:%S" "$y-$mo-$d $h:$mi:${s:-0}" +%s 2>/dev/null || echo "")
     now_ts=$(date -u +%s)
     if [ -n "$cam_ts" ]; then
       diff=$(( now_ts - cam_ts )); [ $diff -lt 0 ] && diff=$(( -diff ))
       if [ "$diff" -le 60 ]; then
-        ok "часы камеры расходятся с хостом на ${diff} с"
+        ok "часы камеры расходятся с хостом на ${diff} с (камера UTC: $y-$mo-$d $h:$mi:${s:-0})"
       else
         warn "часы камеры расходятся на ${diff} с. ONVIF-авторизация в Protect будет падать. Нужен NTP для камеры (docs/01-camera-prep.md)."
       fi
+    else
+      warn "не удалось разобрать время камеры: $utc"
     fi
+  else
+    warn "в ответе ONVIF нет UTCDateTime, пропускаю проверку часов"
   fi
 fi
 

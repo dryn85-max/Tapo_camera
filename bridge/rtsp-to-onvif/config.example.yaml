@@ -25,9 +25,9 @@ onvif:
     highQuality:
       rtsp: /c200_1                # имя стрима в go2rtc
       snapshot: /api/frame.jpeg?src=c200_1   # снапшоты в rtsp-to-onvif пока не работают
-      width: 1920                  # Tapo C200: 1920x1080, ~15 fps
+      width: 1920                  # Tapo C200 V5 fw 1.5.7: 1920x1080 @ 25 fps, H.264 High
       height: 1080
-      framerate: 15
+      framerate: 25
       bitrate: 2048                # кбит/с; уточнить через scripts/check-camera.sh
       quality: 4
     ports:
@@ -48,7 +48,7 @@ onvif:
       snapshot: /api/frame.jpeg?src=c200_2
       width: 1920
       height: 1080
-      framerate: 15
+      framerate: 25
       bitrate: 2048
       quality: 4
     ports:
