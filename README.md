@@ -14,8 +14,8 @@
 
 ## Целевое железо
 
-Консоль: **UniFi Dream Router 7 (UDR7)**, схема и расчёт хранилища в
-[docs/00-hardware-udr7.md](docs/00-hardware-udr7.md).
+Консоль: **UniFi Cloud Gateway Industrial**, схема и расчёт хранилища в
+[docs/00-hardware.md](docs/00-hardware.md).
 
 Камеры: 
 две Tapo C200(DE) **Ver 5.0** (ЕС, 2024, прошивка 1.5.7): Ingenic T23N, SC2336P, RTL8188FTV,
